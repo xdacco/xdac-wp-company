@@ -1,0 +1,638 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #292c3b;
+}
+
+/*================== START ALL STYLES =================*/
+.wrapper-login-register {
+    padding: 100px 0 20px 0;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 500;
+}
+.wrapper-login-register .logo-block {
+    text-align: center;
+}
+.wrapper-login-register .logo-block img {
+    width: 300px;
+}
+.tabs-login-register {
+    margin-top: 35px;
+    text-align: center;
+}
+.tabs-login-register ul>li>a {
+    border-radius: 0px 0px 0px 0px;
+}
+.tabs-login-register ul {
+    width: 374px;
+    margin: 0 auto;
+}
+/* style from bootstrap */
+.nav-justified>li>a {
+    margin-bottom: 0px;
+}
+.tabs-login-register ul li {
+    width: 187px;
+    display: inline-block;
+    border: 1px solid #019bdb;
+    float: left;
+    line-height: 40px;
+}
+.tabs-login-register ul li>a {
+    padding: 0px 30px;
+    color: #ffffff;
+    font-size: 1em;
+}
+.tabs-login-register ul li.active>a{
+    background-color: #019bdb;
+}
+.tabs-login-register ul li.active>a:hover {
+    background-color: #019bdb;
+}
+.tabs-login-register ul>li+li {
+    margin-left: 0px;
+}
+
+.tabs-login-register ul li.xdac-login,
+.tabs-login-register ul li.xdac-login>a {
+    border-radius: 0px 46px 46px 0px;
+    -moz-border-radius: 0px 46px 46px 0px;
+    -webkit-border-radius: 0px 46px 46px 0px;
+}
+.tabs-login-register ul li.xdac-register,
+.tabs-login-register ul li.xdac-register>a {
+    border-radius: 46px 0px 0px 46px;
+    -moz-border-radius: 46px 0px 0px 46px;
+    -webkit-border-radius: 46px 0px 0px 46px;
+}
+.tabs-login-register ul li.xdac-login>a:hover,
+.tabs-login-register ul li.xdac-register>a:hover,
+.tabs-login-register ul li.xdac-login>a:active,
+.tabs-login-register ul li.xdac-register>a:active,
+.tabs-login-register ul li.xdac-login>a:focus,
+.tabs-login-register ul li.xdac-register>a:focus {
+    color: #ffffff;
+}
+.tabs-login-register ul li.xdac-login:not(.active)>a:hover,
+.tabs-login-register ul li.xdac-register:not(.active)>a:hover,
+.tabs-login-register ul li.xdac-login:not(.active)>a:active,
+.tabs-login-register ul li.xdac-register:not(.active)>a:active,
+.tabs-login-register ul li.xdac-login:not(.active)>a:focus,
+.tabs-login-register ul li.xdac-register:not(.active)>a:focus {
+    background-color: #292c3b;
+}
+.login-register-description {
+    color: #ffffff;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.xdac-client-form {
+    text-align: center;
+}
+.xdac-client-form input[type=text],
+.xdac-client-form input[type=email],
+.xdac-client-form input[type=password] {
+    width: 374px;
+    height: 50px;
+    background-color: #222836;
+    color: #ffffff;
+    border-radius: 46px 46px 46px 46px;
+    -moz-border-radius: 46px 46px 46px 46px;
+    -webkit-border-radius: 46px 46px 46px 46px;
+    border: none;
+    padding-left: 30px;
+    font-size: 1em;
+}
+.xdac-client-form input[type=text],
+.xdac-client-form input[type=email],
+.xdac-client-form input[type=password] {
+    margin-bottom: 30px;
+    outline: none;
+}
+.xdac-client-form input[type=text]::-webkit-input-placeholder,
+.xdac-client-form input[type=email]::-webkit-input-placeholder,
+.xdac-client-form input[type=password]::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #65686f;
+    font-size: 1em;
+}
+.xdac-client-form input[type=text]::-moz-placeholder,
+.xdac-client-form input[type=email]::-moz-placeholder,
+.xdac-client-form input[type=password]::-moz-placeholder { /* Firefox 19+ */
+    color: #65686f;
+    font-size: 1em;
+}
+.xdac-client-form input[type=text]:-ms-input-placeholder,
+.xdac-client-form input[type=password]:-ms-input-placeholder,
+.xdac-client-form input[type=email]:-ms-input-placeholder { /* IE 10+ */
+    color: #65686f;
+    font-size: 1em;
+}
+.xdac-client-form input[type=text]:-moz-placeholder,
+.xdac-client-form input[type=password]:-moz-placeholder,
+.xdac-client-form input[type=email]:-moz-placeholder { /* Firefox 18- */
+    color: #65686f;
+    font-size: 1em;
+}
+.xdac-client-form input[type=submit].xdac-submit-form {
+    width: 374px;
+    height: 50px;
+    color: #ffffff;
+    font-size: 1em;
+    background-color: #019bdb;
+    border-radius: 46px 46px 46px 46px;
+    -moz-border-radius: 46px 46px 46px 46px;
+    -webkit-border-radius: 46px 46px 46px 46px;
+    border: 0;
+    outline: none;
+}
+.xdac-client-form input[type=submit]:hover {
+	border: 2px solid #019bdb;
+	background-color: #292c3b;
+}
+.xdac-client-form input[type=submit].xdac-submit-form::-moz-focus-inner {
+    border: 0;
+    outline: none;
+}
+.xdac-client-form div.error{
+    position: relative;
+}
+.xdac-client-form div.error .xdac-client-errors{
+    position: absolute;
+    left: calc( 50% - 160px );
+    bottom: -5px;
+}
+.xdac-client-form div.error input[type=text],
+.xdac-client-form div.error input[type=email],
+.xdac-client-form div.error input[type=password]{
+    background-color: #b58f8f;
+}
+/*================== END ALL STYLES =================*/
+/*================== START ERRORS AND MESSAGES STYLES =================*/
+.block-xdac-client-message,
+.block-xdac-client-errors {
+    width: 374px;
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
+.xdac-client-errors {
+    color: #d54e21;
+}
+.xdac-client-errors a {
+    color: #019bdb;
+}
+.xdac-client-message {
+    color: #34b93d;
+}
+/*================== END ERRORS AND MESSAGES STYLES =================*/
+/*================== START RECOVER PAGE =================*/
+.recover-submit {
+    margin-top: 24px;
+}
+/*================== END RECOVER PAGE =================*/
+/*================== START REGISTER PAGE =================*/
+.xdac-register-terms {
+    margin: 0 auto;
+    width: 374px;
+    padding-top: 20px;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    color: #65686f;
+}
+.xdac-register-terms a {
+    color: #65686f;
+    text-decoration: underline;
+}
+/*================== END REGISTER PAGE =================*/
+/*================== START LOGIN PAGE =================*/
+.xdac-client-form .remember {
+    width: 374px;
+    margin: 0 auto;
+    position: relative;
+    padding-bottom: 30px;
+}
+.xdac-client-form .remember .remember-me-checkbox {
+    position: relative;
+}
+.xdac-client-form .remember input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+}
+.xdac-client-form .remember .xdac-remember-me {
+    font-size: 1em;
+    color: #65686f;
+    position: relative;
+    padding-left: 30px;
+}
+.xdac-client-form .remember .xdac-forgot>a{
+    font-size: 1em;
+    color: #65686f;
+    text-decoration: underline;
+    border-left: 2px solid #65686f;
+    padding-left: 24px;
+    margin-left: 24px;
+}
+
+/*==========================================*/
+/*==========================================*/
+/*==========================================*/
+/* Made by Jimmy Gillam */
+/* Checkmark style starts */
+@-moz-keyframes dothabottomcheck {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 6px;
+    }
+}
+@-webkit-keyframes dothabottomcheck {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 6px;
+    }
+}
+@keyframes dothabottomcheck {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 6px;
+    }
+}
+@keyframes dothatopcheck {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: 16px;
+    }
+}
+@-webkit-keyframes dothatopcheck {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: 16px;
+    }
+}
+@-moz-keyframes dothatopcheck {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 0;
+    }
+    100% {
+        height: 16px;
+    }
+}
+input[type="checkbox"] {
+    display: none;
+}
+.xdac-remember-check-box {
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: 2px solid #019bdb;
+    border-radius: 0px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-transition: border-color ease 0.2s;
+    -o-transition: border-color ease 0.2s;
+    -webkit-transition: border-color ease 0.2s;
+    transition: border-color ease 0.2s;
+    cursor: pointer;
+}
+.xdac-remember-check-box::before, .xdac-remember-check-box::after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    height: 0;
+    width: 5px;
+    background-color: #34b93d;
+    display: inline-block;
+    -moz-transform-origin: left top;
+    -ms-transform-origin: left top;
+    -o-transform-origin: left top;
+    -webkit-transform-origin: left top;
+    transform-origin: left top;
+    border-radius: 5px;
+    content: " ";
+    -webkit-transition: opacity ease 0.5;
+    -moz-transition: opacity ease 0.5;
+    transition: opacity ease 0.5;
+}
+.xdac-remember-check-box::before {
+    top: 14px;
+    left: 7px;
+    -moz-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    -o-transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}
+.xdac-remember-check-box::after {
+    top: 8px;
+    left: 0px;
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+input[type="checkbox"]:checked + .xdac-remember-check-box, .xdac-remember-check-box.checked {
+    border-color: #34b93d;
+}
+input[type="checkbox"]:checked + .xdac-remember-check-box::after, .xdac-remember-check-box.checked::after {
+    height: 6px;
+    -moz-animation: dothabottomcheck 0.1s ease 0s forwards;
+    -o-animation: dothabottomcheck 0.1s ease 0s forwards;
+    -webkit-animation: dothabottomcheck 0.1s ease 0s forwards;
+    animation: dothabottomcheck 0.1s ease 0s forwards;
+}
+input[type="checkbox"]:checked + .xdac-remember-check-box::before, .xdac-remember-check-box.checked::before {
+    height: 16px;
+    -moz-animation: dothatopcheck 0.2s ease 0s forwards;
+    -o-animation: dothatopcheck 0.2s ease 0s forwards;
+    -webkit-animation: dothatopcheck 0.2s ease 0s forwards;
+    animation: dothatopcheck 0.2s ease 0s forwards;
+}
+/*================== END LOGIN PAGE =================*/
+
+@media only screen and (max-width : 768px) {
+    .wrapper-login-register .logo-block img {
+        max-width: 300px;
+        width: 100%;
+    }
+    .wrapper-login-register {
+        padding: 50px 25px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: 500;
+    }
+
+    .tabs-login-register ul {
+        max-width: 300px;
+        width: 100%;
+    }
+    .tabs-login-register ul li {
+        max-width: 148px;
+        width: 50%;
+    }
+
+    .xdac-client-form input[type=text],
+    .xdac-client-form input[type=email],
+    .xdac-client-form input[type=password] {
+        max-width: 300px;
+        width: 100%;
+        height: 54px;
+        padding-left: 38px;
+        font-size: 0.9em;
+    }
+
+    .xdac-client-form .remember {
+        width: 300px;
+    }
+
+    .xdac-client-form input[type=submit].xdac-submit-form {
+        max-width: 300px;
+        width: 100%;
+        height: 56px;
+    }
+
+    .xdac-register-terms {
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .block-xdac-client-message,
+    .block-xdac-client-errors {
+        max-width: 300px;
+        width: 100%;
+    }
+    .xdac-client-form div.error .xdac-client-errors {
+        left: calc( 50% - 135px );
+    }
+}
+
+
+
+/*Form Wizard*/
+.bs-wizard {margin-top: 40px; padding: 0 0 10px 0;}
+.bs-wizard .progress{ background-color: #6f6f6f; }
+.bs-wizard > .bs-wizard-step {padding: 0; position: relative;}
+.bs-wizard > .bs-wizard-step + .bs-wizard-step {}
+.bs-wizard > .bs-wizard-step .bs-wizard-stepnum {color: #595959; font-size: 16px; margin-bottom: 5px;}
+.bs-wizard > .bs-wizard-step > .bs-wizard-dot {position: absolute; width: 36px; height: 36px; display: block; background: #292c3b; border: 2px solid #6f6f6f; top: 45px; left: 50%; margin-top: -15px; margin-left: -15px; border-radius: 50%;}
+.bs-wizard > .bs-wizard-step > .bs-wizard-dot:after {content: ' '; width: 18px; height: 18px; background: #019bdb; border-radius: 50px; position: absolute; top: 7px; left: 7px; }
+.bs-wizard > .bs-wizard-step > .progress {position: relative; border-radius: 0px; height: 3px; box-shadow: none; margin: 24px 0;}
+.bs-wizard > .bs-wizard-step > .progress > .progress-bar {width:0px; box-shadow: none; background: #6f6f6f;}
+.bs-wizard > .bs-wizard-step.complete > .progress > .progress-bar {width:100%;}
+.bs-wizard > .bs-wizard-step.active > .progress > .progress-bar {width:50%;}
+.bs-wizard > .bs-wizard-step:first-child.active > .progress > .progress-bar {width:0%;}
+.bs-wizard > .bs-wizard-step:last-child.active > .progress > .progress-bar {width: 100%;}
+.bs-wizard > .bs-wizard-step.disabled > .bs-wizard-dot {background-color: #292c3b;}
+.bs-wizard > .bs-wizard-step.disabled > .bs-wizard-dot:after {opacity: 0;}
+.bs-wizard > .bs-wizard-step:first-child  > .progress {left: 50%; width: 50%;}
+.bs-wizard > .bs-wizard-step:last-child  > .progress {width: 50%;}
+/*END Form Wizard*/
+
+
+.site-group{
+    color: #65686f
+}
+
+.xdac-client-form .site-group input[type=text]{
+    width: 270px;
+}
+
+@media only screen and (max-width : 768px) {
+
+    .site-group{
+        color: #65686f
+    }
+
+    .site-group .base-url{
+        display: block;
+        left: calc( 50% - 135px );
+    }
+
+    .xdac-client-form .site-group input[type=text]{
+        width: 100%;
+    }
+
+}
+
+
+/*REGISTER INFO*/
+.register-info{
+    position: fixed;
+    right: -100%;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    max-width: 900px;
+    box-shadow: 0 21px 21px rgba(0, 0, 0, 0.5);
+    background-color: #f4f4f5;
+    padding: 80px 25px 70px 42px;
+}
+
+.register-info__content{
+    height: 95%;
+    margin-bottom: 5%;
+    overflow-y: auto;
+}
+
+
+.register-info p{
+    font-size: 0.9em;
+    line-height: 1.9em;
+    margin-bottom: 0;
+}
+
+.register-info .register-info__mb{
+    margin-bottom: 30px;
+}
+
+.register-info .register-info__title{
+    position: relative;
+    color: #333333;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.register-info__title span{
+    position: relative;
+    background-color: #f4f4f5;
+    font-size: 1.3em;
+}
+
+.register-info__title:before{
+    content: '';
+    position: absolute;
+    top: 9px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    background: #333333;
+}
+
+.register-info__btn{
+    max-width: 250px;
+    width: 100%;
+    height: 50px;
+    color: #ffffff;
+    font-size: 1em;
+    background-color: #019bdb;
+    border-radius: 46px 46px 46px 46px;
+    -moz-border-radius: 46px 46px 46px 46px;
+    -webkit-border-radius: 46px 46px 46px 46px;
+    border: 0;
+    outline: none;
+}
+
+
+@media only screen and (max-width : 768px) {
+    .register-info{
+        width: 100%;
+    }
+}
+/*END REGISTER INFO*/
+
+.tabs-login-register{
+    margin-bottom: 30px;
+}
+
+.step-title{
+    padding-bottom: 20px;
+    font-size: 2.5em;
+    text-align: center;
+    color: #fff;
+}
+
+.step-title__subtitle{
+    color: #65686f;
+    padding-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.step-title__company{
+    font-size: 2em;
+    font-weight: 300;
+    color: #fff;
+    padding-bottom: 15px;
+}
+
+.step-title__company span{
+    font-weight: 400;
+
+}
+
+.xdac-company-register-terms{
+    width: 100%;
+}
+
+.register-company-info__btn{
+    display: block;
+    margin: 0 auto;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #019bdb;
+    line-height: 50px;
+    text-align: center;
+    color: #65686f;
+    background: none;
+    font-size: 24px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.before-pay-btn{
+    margin: 0 auto;
+    padding-top: 20px;
+    font-size: 1.1em;
+    line-height: 1.5em;
+    color: #65686f;
+    padding-bottom: 8px;
+}
+
+.after-pay-btn{
+    margin: 0 auto;
+    padding-top: 5px;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    color: #65686f;
+}
+
+.time-registered-company{
+    padding: 40px 0 40px 0;
+    color: #65686f;
+    font-size: 1.1em;
+}
+
+.time-registered-company span{
+    display: block;
+    padding-top: 5px;
+    color: #fff;
+}
