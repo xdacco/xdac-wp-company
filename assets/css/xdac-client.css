@@ -95,6 +95,7 @@ body {
 }
 .xdac-client-form input[type=text],
 .xdac-client-form input[type=email],
+.xdac-client-form input[type=number],
 .xdac-client-form input[type=password] {
     width: 374px;
     height: 50px;

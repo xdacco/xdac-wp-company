@@ -98,6 +98,9 @@ if( !class_exists('XdacCompany') ):
         const PAGE_SEND_XDAC_COMPANY = 'send-xdac-company';
         const PAGE_CONFIRMATION_COMPANY = 'confirmation-company';
 
+        const ACTION_CREATE_ACCOUNT = 'ACTION_CREATE_ACCOUNT';
+        const ACTION_TOP_UP_ACCOUNT = 'ACTION_TOP_UP_ACCOUNT';
+
         /**
          * Complete data transfer version.
          *
@@ -105,9 +108,40 @@ if( !class_exists('XdacCompany') ):
          */
         public $version = '0.1';
 
+
+        /**
+         * @var string
+         */
         public $mainAccount = 'inita';
 
-        public $amount = '100 XDAC';
+
+        /**
+         * Prefix for company wallet.
+         *
+         * @var string
+         */
+        private $suffix = '.xdac';
+
+        /**
+         * Primary currencies
+         *
+         * @var string
+         */
+        private $currency = 'XDAC';
+
+        /**
+         * Minimum transaction amount.
+         *
+         * @var int
+         */
+        private $minTransactionAmount = 100;
+
+        /**
+         * Commission for conducting a transaction.
+         *
+         * @var int
+         */
+        private $commission = 5;
 
         /**
          * The single instance of the class.
@@ -143,17 +177,31 @@ if( !class_exists('XdacCompany') ):
             $this->define_constants();
             $this->init_hooks();
 
+            $this->generateWallet();
             do_action( 'xdac_company_loaded' );
 
             add_action( 'init', array( $this, 'process_post') );
-
-
         }
 
-        private function createAccount($link){
 
+
+        public function process_post(){
+            if(!empty($_POST['xdac_company_form'])){
+                switch ($_POST['xdac_company_form']){
+                    case self::PAGE_REGISTER_COMPANY:
+                        $this->registration();
+                        break;
+                    case self::PAGE_SEND_XDAC_COMPANY:
+                        $this->sendXdacCompany();
+                        break;
+                }
+            }
+        }
+
+
+        private function createAccount($token){
             global $wpdb;
-
+            $amount = (float) $_POST['amount'];
             $message = 'Company successfully created';
             try{
 
@@ -166,7 +214,7 @@ if( !class_exists('XdacCompany') ):
                 ]);
 
                 $response = $client->post($url,
-                    ['form_params' => ['company' => $link]]
+                    ['form_params' => ['company' => $token]]
                 );
 
                 $body = $response->getBody();
@@ -179,7 +227,7 @@ if( !class_exists('XdacCompany') ):
                         }
                     }
                 } else {
-                    $wpdb->query($wpdb->prepare("UPDATE `xdac_companies` SET `created_at`='" .date('Y-m-d H:i:s'). "' WHERE `link`='" . $link."'"));
+                    $wpdb->query($wpdb->prepare("UPDATE `xdac_companies` SET `created_at`='" .date('Y-m-d H:i:s'). "', `icapital`=".$amount." WHERE `wallet`='" . $token."'"));
                     $wpdb->query($wpdb->prepare("INSERT INTO `xdac_company_logs` (`user_id`, `response`, `created_at`)  VALUES(".get_current_user_id().", '".$_POST['response']."', '".date('Y-m-d H:i:s')."')"));
                 }
 
@@ -187,63 +235,96 @@ if( !class_exists('XdacCompany') ):
                 $message = $e->getMessage();
             }
 
+            return $message;
+        }
 
+        private function sendMoneyToCompany($token, $amount){
+            try{
+
+                $url = 'http://localhost:3000/top-up-account/';
+
+                $client = new Client([
+                    'headers' => [
+                        'Content-Type' => 'application/x-www-form-urlencoded'
+                    ]
+                ]);
+
+                $response = $client->post($url,
+                    [
+                        'form_params' => [
+                            'name' => $token,
+                            'amount' => $amount,
+                        ]
+                    ]
+                );
+
+                $body = $response->getBody();
+                $res = json_decode((string) $body);
+
+                if(isset($res->error)) {
+                    foreach ($res->error->details as $error) {
+                        if(!empty($error->message)){
+                            $message = $error->message . '<br />';
+                        }
+                    }
+                } else {
+                    //
+                }
+
+            } catch (Exception $e) {
+                $message = $e->getMessage();
+            }
 
             return $message;
         }
 
-        public function process_post(){
-            if(!empty($_POST['xdac_company_form'])){
-                switch ($_POST['xdac_company_form']){
-                    case 'login-company':
-                        $this->login();
-                        break;
-                    case 'register-company':
-                        $this->registration();
-                        break;
-                    case 'verify-email-company':
-                        $this->verifyEmail();
-                        break;
-                    case self::PAGE_SEND_XDAC_COMPANY:
-                        $this->sendXdacCompany();
-                        break;
-                }
-            }
-        }
-
-        public function login(){
-
-        }
-
         public function sendXdacCompany(){
 
-
             header('Content-Type: application/json');
-
-            $data = [];
-
             global $wpdb;
 
-            $link = $_GET['link'];
+            $data = [];
+            $token = $_GET['token'];
+            $amount = (float) $_POST['amount'];
 
-            if(empty($link)) {
+            if(empty($token)) {
                 $data['message'] = __("Company not found", 'xdac_wp_company');
                 $data['status'] = 'error';
                 $data['link'] =  (home_url('/' . self::PAGE_REGISTER_COMPANY));
                 wp_send_json($data); wp_die();
             }
 
-            $company = $wpdb->get_row( "SELECT * FROM `xdac_company_owners` LEFT JOIN `xdac_companies` ON `xdac_companies`.`id` = `xdac_company_owners`.`company_id` WHERE `user_id` = ".get_current_user_id()." AND `link`='{$link}'");
+            $company = $wpdb->get_row( "SELECT * FROM `xdac_companies` WHERE `wallet`='{$token}'");
 
             if(!empty($company)) {
+
                 if(is_null($company->created_at)) {
-                    $data['message'] = $this->createAccount($company->link);
-                    $data['status'] = 'successful';
+                    //create company account
+                    $this->createAccount($token);
                 } else {
-                    $data['status'] = 'error';
-                    $data['message'] = __("Company already was created", 'xdac_wp_company');
+                    //update capital
+                    $icapital = $company->icapital + $amount;
+                    $wpdb->query($wpdb->prepare("UPDATE `xdac_companies` SET `icapital`={$icapital} WHERE `id`={$company->id}"));
                 }
-                $data['link'] =  (home_url('/' . self::PAGE_CONFIRMATION_COMPANY) . '?link=' . $link);
+
+                $owner = $wpdb->get_row( "SELECT * FROM `xdac_company_owners` WHERE `user_id`=".get_current_user_id()." AND `company_id`='{$company->id}'");
+                if(!empty($owner)){
+                    //update owner
+                    $ownerAmount = $owner->contribution + $amount;
+                    $stake = !empty($ownerAmount) ? round($company->icapital / $ownerAmount, 2) : 0;
+                    $userId = get_current_user_id();
+                    $wpdb->query($wpdb->prepare("UPDATE `xdac_company_owners` SET `contribution`={$ownerAmount}, `stake`={$stake} WHERE `company_id`={$company->id} AND `user_id`={$userId}"));
+                } else {
+                    //add new owner
+                    $stake = !empty($amount) ? round($company->icapital / $amount, 2) : 0;
+                    $wpdb->query($wpdb->prepare("INSERT INTO `xdac_company_owners` 
+                        (`user_id`, `company_id`, `contribution`, `stake`, `created_at`)  
+                        VALUES(".get_current_user_id().", '".$company->id."', '{$amount}', '{$stake}','".date('Y-m-d H:i:s')."')"));
+                }
+
+                //send money from main account to company account
+                $this->sendMoneyToCompany($token, $amount - $this->commission);
+                $_SESSION['send-xdac'] = true;
             } else {
                 $data['message'] = __("Company not found", 'xdac_wp_company');
                 $data['status'] = 'error';
@@ -251,84 +332,6 @@ if( !class_exists('XdacCompany') ):
             }
 
             wp_send_json($data); wp_die();
-        }
-
-        public function registration() {
-            global $wpdb;
-
-            $companyName =   sanitize_text_field( $_POST['company_name'] );
-            $companyLink  =   strtolower(sanitize_text_field( $_POST['company_link'] ));
-            $email      =   sanitize_email( $_POST['email'] );
-
-            if($this->registration_validation($companyName, $companyLink, $email)) {
-
-                $token = md5(uniqid($email, true));
-
-                $company = $wpdb->insert('xdac_companies', array(
-                    'name' => $companyName,
-                    'link' => $companyLink,
-                    'icapital' => 0,
-                    'email' => $email,
-                    'wallet' => '',
-                    'key' => '',
-                    'is_verity' => $token
-                ));
-
-                if($company) {
-                    $companyId = $wpdb->insert_id;
-
-                    $ownwer = $wpdb->insert('xdac_company_owners', array(
-                        'user_id' => get_current_user_id(),
-                        'company_id' => $companyId,
-                        'wallet' => '',
-                        'contribution' => 0,
-                        'stake' => 0,
-                        'created_at' => date('Y-m-d H:i:s'),
-                    ));
-
-                    $this->xdac_registration_email($companyName, $companyLink, $email, $token);
-
-                    wp_redirect(home_url(self::PAGE_VERITY_EMAIL_COMPANY) . '?link=' . $companyLink);
-                    exit;
-                }
-            }
-        }
-
-        public function registration_validation($companyName, $companyLink, $email){
-
-            global $wpdb;
-            global $reg_errors;
-            $reg_errors = new WP_Error();
-
-
-            if ( empty($companyName) ) {
-                $reg_errors->add( 'company_name', __('Company Name required', 'xdac_wp_company'));
-            } elseif(strlen($companyName) > 255 ) {
-                $reg_errors->add( 'company_name', __('Company Name must be less than 255', 'xdac_wp_company'));
-            }
-
-            if ( empty($companyLink) ) {
-                $reg_errors->add( 'company_link', __('Company Link required', 'xdac_wp_company'));
-            } else {
-                if(strlen($companyLink) > 12) {
-                    $reg_errors->add( 'company_link', __('Company Link must be less than 12', 'xdac_wp_company'));
-                }
-                if( !preg_match('/^[a-zA-Z1-9_-]*$/', $companyLink) ) {
-                    $reg_errors->add( 'company_link', __('Invalid company link', 'xdac_wp_company'));
-                } else {
-                    if( $wpdb->get_var( "SELECT COUNT(*) FROM xdac_companies WHERE link = '$companyLink'") ) {
-                        $reg_errors->add( 'company_link', __('This name already used', 'xdac_wp_company'));
-                    }
-                }
-            }
-
-            if ( !is_email( $email ) ) {
-                $reg_errors->add( 'email', __('Email is not valid', 'xdac_wp_company'));
-            }elseif ( $wpdb->get_var( "SELECT COUNT(*) FROM xdac_companies WHERE `email` = '$email'") ) {
-                $reg_errors->add( 'email', __('Email already used', 'xdac_wp_company'));
-            }
-
-            return count($reg_errors->get_error_messages()) == 0;
         }
 
         private function xdac_registration_email($companyName, $companyLink, $email, $token){
@@ -604,10 +607,10 @@ if( !class_exists('XdacCompany') ):
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/login.php';
             } elseif ( is_page( self::PAGE_VERITY_EMAIL_COMPANY ) ) {
 
-                $_SESSION['verify-email-company'] = null;
-
                 global $wpdb;
+                global $errors;
 
+                $errors = new WP_Error();
                 $link = $_GET['link'];
                 $token  = $_GET['token'];
 
@@ -616,91 +619,81 @@ if( !class_exists('XdacCompany') ):
                     exit;
                 }
 
-                $company = $wpdb->get_row( "SELECT * FROM `xdac_company_owners` LEFT JOIN `xdac_companies` ON `xdac_companies`.`id` = `xdac_company_owners`.`company_id` WHERE `user_id` = ".get_current_user_id()." AND `link`='{$link}'");
-
+                $company = $wpdb->get_row( "SELECT * FROM `xdac_companies` WHERE `link`='{$link}'");
                 if(!empty($company)) {
-
                     if( empty($company->is_verity) ) {
-                        wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?link=' . $link);
+                        wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?token=' . $token);
                         exit;
                     }
-
                     if($token) {
                         if( !empty($token) && $company->is_verity == $token ) {
                             if( $wpdb->query($wpdb->prepare("UPDATE `xdac_companies` SET `is_verity`=NULL WHERE `id`=" . $company->id)) ) {
-                                wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?link=' . $link);
+                                wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?token=' . $token);
                                 exit;
                             }
                         } else {
-                            $_SESSION['verify-email-company'] = __("Invalid token", 'xdac_wp_company');
+                            $errors->add( 'invalid_token', __("Invalid token", 'xdac_wp_company'));
                         }
                     }
-
-
                 } else {
-                    $_SESSION['verify-email-company'] = __("Company not found", 'xdac_wp_company');
-
+                    $errors->add( 'not_found', __("Company not found", 'xdac_wp_company'));
                 }
 
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/verify-email.php';
+
             } elseif ( is_page( self::PAGE_SEND_XDAC_COMPANY ) ) {
 
-                $_SESSION['error-send-xdac'] = null;
-
                 global $wpdb;
-
+                global $errors;
                 global $company;
+                global $chainId;
 
-                $link = $_GET['link'];
+                $chainId = $this->getChainId();
 
-                if(empty($link)) {
+                if($chainId === false) {
+                    //Error!
+                }
+
+                $token = $_GET['token'];
+
+                if(empty($token)) {
                     wp_redirect(home_url(self::PAGE_REGISTER_COMPANY)); exit;
                 }
 
-                $company = $wpdb->get_row( "SELECT * FROM `xdac_company_owners` LEFT JOIN `xdac_companies` ON `xdac_companies`.`id` = `xdac_company_owners`.`company_id` WHERE `user_id` = ".get_current_user_id()." AND `link`='{$link}'");
-
+                $company = $wpdb->get_row( "SELECT * FROM `xdac_companies` WHERE `wallet`='{$token}'");
                 if(!empty($company)) {
-
-                    if(!is_null($company->created_at)) {
-                        wp_redirect(home_url(self::PAGE_CONFIRMATION_COMPANY) . '?link=' . $link); exit;
+                    if(!is_null($company->created_at) && isset($_SESSION['send-xdac']) && $_SESSION['send-xdac'] == true){
+                        unset($_SESSION['send-xdac']);
+                        wp_redirect(home_url(self::PAGE_CONFIRMATION_COMPANY) . '?token=' . $token); exit;
                     }
-
                 } else {
-                    $_SESSION['error-send-xdac'] = __("Company not found", 'xdac_wp_company');
+                    $errors->add( 'not_found', __("Company not found", 'xdac_wp_company'));
                 }
 
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/send-xdac.php';
 
             } elseif ( is_page( self::PAGE_CONFIRMATION_COMPANY ) ) {
 
-                $_SESSION['error-confirmation-company'] = null;
-
                 global $wpdb;
-
+                global $errors;
                 global $company;
+                global $owners;
 
-                $link = $_GET['link'];
+                $token = $_GET['token'];
 
-                $company = $wpdb->get_row( "SELECT * FROM `xdac_company_owners` LEFT JOIN `xdac_companies` ON `xdac_companies`.`id` = `xdac_company_owners`.`company_id` WHERE `user_id` = ".get_current_user_id()." AND `link`='{$link}'");
+                $company = $wpdb->get_row( "SELECT * FROM `xdac_companies` WHERE `wallet`='{$token}'");
 
                 if(empty($company)) {
-                    $_SESSION['error-confirmation-company'] = __("Company not found", 'xdac_wp_company');
+                    $errors->add( 'not_found', __("Company not found", 'xdac_wp_company'));
                 } elseif($company->created_at == null ) {
-                    wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?link=' . $link); exit;
+//                    wp_redirect(home_url(self::PAGE_SEND_XDAC_COMPANY) . '?token=' . $token); exit;
                 } else {
-
+                    $owners = $wpdb->get_results( "SELECT * FROM `xdac_company_owners` WHERE `company_id`='{$company->id}'");
                 }
 
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/confirmation-company.php';
             }
             return $page_template;
-        }
-
-        private function checkIsLogined(){
-            if ( ! is_user_logged_in() ) {
-                wp_redirect(home_url('/login'));
-                exit;
-            }
         }
 
         /**
@@ -724,7 +717,11 @@ if( !class_exists('XdacCompany') ):
             $this->define( 'XDAC_COMPANY_PLUGIN_URL', plugin_dir_url( __FILE__ ));
             $this->define( 'XDAC_COMPANY_VERSION', $this->version );
             $this->define( 'XDAC_COMPANY_MAIN_ACCOUNT', $this->mainAccount );
-            $this->define( 'XDAC_COMPANY_AMOUNT', $this->amount );
+            $this->define( 'XDAC_COMPANY_CURRENCY', $this->currency );
+            $this->define( 'XDAC_COMPANY_MIN_TRANSACTION_AMOUNT', $this->minTransactionAmount );
+            $this->define( 'XDAC_COMPANY_COMMISSION', $this->commission );
+            $this->define( 'ACTION_CREATE_ACCOUNT', self::ACTION_CREATE_ACCOUNT );
+            $this->define( 'ACTION_TOP_UP_ACCOUNT', self::ACTION_TOP_UP_ACCOUNT );
 
             $this->define( 'XDAC_COMPANY_URL_LOGIN', self::PAGE_LOGIN_COMPANY );
             $this->define( 'XDAC_COMPANY_URL_REGISTER', self::PAGE_REGISTER_COMPANY );
@@ -744,6 +741,173 @@ if( !class_exists('XdacCompany') ):
                 define( $name, $value );
             }
         }
+
+        /**
+         * Company registration
+         */
+        private function registration() {
+            global $wpdb;
+
+            $companyName =   sanitize_text_field( $_POST['company_name'] );
+            $companyLink  =   strtolower(sanitize_text_field( $_POST['company_link'] ));
+            $email      =   sanitize_email( $_POST['email'] );
+
+            if($this->registration_validation($companyName, $companyLink, $email)) {
+                $wallet = $this->createWallet();
+                $company = $wpdb->insert('xdac_companies', array(
+                    'name' => $companyName,
+                    'link' => $companyLink,
+                    'icapital' => 0,
+                    'email' => $email,
+                    'wallet' => $wallet,
+                    'key' => '',
+                    'is_verity' => $wallet
+                ));
+                if($company) {
+                    $this->xdac_registration_email($companyName, $companyLink, $email, $wallet);
+                    wp_redirect(home_url(self::PAGE_VERITY_EMAIL_COMPANY) . '?link=' . $companyLink);
+                    exit;
+                }
+            }
+        }
+
+        /**
+         * Method validates company registration
+         *
+         * @param $companyName
+         * @param $companyLink
+         * @param $email
+         * @return bool
+         */
+        private function registration_validation($companyName, $companyLink, $email){
+
+            global $errors;
+
+            $errors = new WP_Error();
+
+            if ( empty($companyName) ) {
+                $errors->add( 'company_name', __('Company Name required', 'xdac_wp_company'));
+            } elseif(strlen($companyName) > 255 ) {
+                $errors->add( 'company_name', __('Company Name must be less than 255', 'xdac_wp_company'));
+            }
+
+            if ( empty($companyLink) ) {
+                $errors->add( 'company_link', __('Company Link required', 'xdac_wp_company'));
+            } else {
+                if(strlen($companyLink) > 255) {
+                    $errors->add( 'company_link', __('Company Link must be less than 255', 'xdac_wp_company'));
+                }
+                if( !preg_match('/^[a-zA-Z1-9_-]*$/', $companyLink) ) {
+                    $errors->add( 'company_link', __('Invalid company link', 'xdac_wp_company'));
+                } else {
+                    if( $this->isExistRecord('xdac_companies', 'link', $companyLink) ) {
+                        $errors->add( 'company_link', __('This name already used', 'xdac_wp_company'));
+                    }
+                }
+            }
+
+            if ( !is_email( $email ) ) {
+                $errors->add( 'email', __('Email is not valid', 'xdac_wp_company'));
+            }elseif ( $this->isExistRecord( 'xdac_companies', 'email', $email) ) {
+                $errors->add( 'email', __('Email already used', 'xdac_wp_company'));
+            }
+
+            return count($errors->get_error_messages()) == 0;
+        }
+
+
+        /**
+         *
+         */
+        private function sendXdac() {
+
+            $token = $_GET['token'];
+
+        }
+
+        /**
+         * Checks if there is an entry in the table
+         *
+         * @param string $table
+         * @param string $field
+         * @param string $value
+         * @return bool
+         */
+        private function isExistRecord($table, $field, $value) {
+            global $wpdb;
+            return (bool) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE `{$field}` = '{$value}'");
+        }
+
+        /**
+         * Creates a wallet
+         *
+         * @param string $prefix
+         * @return string
+         */
+        private function createWallet()
+        {
+            $wallet = $this->generateWallet();
+            if ($this->isExistsWallet($wallet)) {
+                $this->createWallet();
+            }
+            return $wallet;
+        }
+
+        /**
+         * Generates a wallet.
+         *
+         * @param int $length
+         * @return string
+         */
+        private function generateWallet($length=7)
+        {
+            $hash = substr(str_shuffle(str_repeat($x='12345abcdefghijklmnopqrstuvwxyz', ceil($length/strlen($x)) )),1,$length);
+            return $hash . $this->suffix;
+        }
+
+        /**
+         * Checks if the wallet already exists.
+         *
+         * @param string $wallet
+         * @return bool
+         */
+        private function isExistsWallet($wallet)
+        {
+            global $wpdb;
+            return (bool)$wpdb->get_var("SELECT wallet FROM `xdac_companies` WHERE `wallet` = '{$wallet}'");
+        }
+
+        /**
+         * Check whether the user is authorized.
+         */
+        private function checkIsLogined(){
+            if ( ! is_user_logged_in() ) {
+                //wp_redirect(home_url('/login'));
+                //exit;
+            }
+        }
+
+
+
+
+        /*************************************************/
+        /**
+         * @return bool|string
+         */
+        private function getChainId(){
+            try{
+                $url = 'http://localhost:3000/info/';
+                $client = new Client();
+                $response = $client->get($url);
+                $body = $response->getBody();
+                $response = json_decode((string) $body);
+                return isset($response->chain_id) ? $response->chain_id : false;
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+
+
     }
 
 endif;

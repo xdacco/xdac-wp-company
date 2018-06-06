@@ -1,28 +1,27 @@
 <?php include_once( XDAC_COMPANY_ABSPATH.'/templates/header.php' ); ?>
 
-    <!-- complete active disabled-->
     <div class="container">
         <div class="row bs-wizard">
             <div class="col-xs-12 col-sm-3 bs-wizard-step active">
-                <div class="text-center bs-wizard-stepnum">Register a company</div>
+                <div class="text-center bs-wizard-stepnum"><?php _e('Register a company', 'xdac_wp_company'); ?></div>
                 <div class="progress"><div class="progress-bar"></div></div>
                 <a href="#" class="bs-wizard-dot"></a>
             </div>
 
             <div class="col-xs-12 col-sm-3 bs-wizard-step disabled">
-                <div class="text-center bs-wizard-stepnum">Verify Email</div>
+                <div class="text-center bs-wizard-stepnum"><?php _e('Verify Email', 'xdac_wp_company'); ?></div>
                 <div class="progress"><div class="progress-bar"></div></div>
                 <span class="bs-wizard-dot"></span>
             </div>
 
             <div class="col-xs-12 col-sm-3 bs-wizard-step disabled">
-                <div class="text-center bs-wizard-stepnum">Initial Capital</div>
+                <div class="text-center bs-wizard-stepnum"><?php _e('Initial Capital', 'xdac_wp_company'); ?></div>
                 <div class="progress"><div class="progress-bar"></div></div>
                 <span class="bs-wizard-dot"></span>
             </div>
 
             <div class="col-xs-12 col-sm-3 bs-wizard-step disabled">
-                <div class="text-center bs-wizard-stepnum">Confirmation</div>
+                <div class="text-center bs-wizard-stepnum"><?php _e('Confirmation', 'xdac_wp_company'); ?></div>
                 <div class="progress"><div class="progress-bar"></div></div>
                 <span class="bs-wizard-dot"></span>
             </div>
@@ -39,24 +38,22 @@
             </ul>
         </div>
 
-
-
         <div class="xdac-client-form">
-            <form class="" action="" method="post">
+            <form action="" method="post">
                 <input type="hidden" name="xdac_company_form" value="register-company"/>
-                <div <?php if( !empty($reg_errors->errors['company_name']) ) echo 'class="error"'; ?>>
-                    <?php if ( !empty($reg_errors->errors['company_name']) )  echo '<p class="xdac-client-errors">' . $reg_errors->errors['company_name'][0] . '</p>'; ?>
+                <div <?php if( !empty($errors->errors['company_name']) ) echo 'class="error"'; ?>>
+                    <?php if ( !empty($errors->errors['company_name']) )  echo '<p class="xdac-client-errors">' . $errors->errors['company_name'][0] . '</p>'; ?>
                     <input type="text" name="company_name" value="<?php echo !empty($_POST['company_name']) ? $_POST['company_name'] : ''; ?>" placeholder="Company Name *" required maxlength="12" />
                 </div>
 
-                <div class="site-group <?php if( !empty($reg_errors->errors['company_link']) ) echo 'error'; ?>" >
-                    <?php if ( !empty($reg_errors->errors['company_link']) )  echo '<p class="xdac-client-errors">' . $reg_errors->errors['company_link'][0] . '</p>'; ?>
+                <div class="site-group <?php if( !empty($errors->errors['company_link']) ) echo 'error'; ?>" >
+                    <?php if ( !empty($errors->errors['company_link']) )  echo '<p class="xdac-client-errors">' . $errors->errors['company_link'][0] . '</p>'; ?>
                     <span class="base-url">https://xdac.co/</span>
                     <input type="text" name="company_link" value="<?php echo !empty($_POST['company_link']) ? $_POST['company_link'] : ''; ?>" placeholder="Company Link *" required maxlength="255"/>
                 </div>
 
-                <div <?php if( !empty($reg_errors->errors['email']) ) echo 'class="error"'; ?>>
-                    <?php if ( !empty($reg_errors->errors['email']) ) echo '<p class="xdac-client-errors">' . $reg_errors->errors['email'][0] . '</p>'; ?>
+                <div <?php if( !empty($errors->errors['email']) ) echo 'class="error"'; ?>>
+                    <?php if ( !empty($errors->errors['email']) ) echo '<p class="xdac-client-errors">' . $errors->errors['email'][0] . '</p>'; ?>
                     <input type="email" name="email" value="<?php echo !empty($_POST['email']) ? $_POST['email'] : ''; ?>" placeholder="Email *" required maxlength="100"/>
                 </div>
 
