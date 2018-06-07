@@ -1,35 +1,7 @@
 <?php include_once( XDAC_COMPANY_ABSPATH.'/templates/header.php' ); ?>
 
-<div class="container">
-    <div class="row bs-wizard">
-        <div class="col-xs-12 col-sm-3 bs-wizard-step complete">
-            <div class="text-center bs-wizard-stepnum"><?php _e('Register a company', 'xdac_wp_company'); ?></div>
-            <div class="progress"><div class="progress-bar"></div></div>
-            <a href="#" class="bs-wizard-dot"></a>
-        </div>
-
-        <div class="col-xs-12 col-sm-3 bs-wizard-step complete">
-            <div class="text-center bs-wizard-stepnum"><?php _e('Verify Email', 'xdac_wp_company'); ?></div>
-            <div class="progress"><div class="progress-bar"></div></div>
-            <span class="bs-wizard-dot"></span>
-        </div>
-
-        <div class="col-xs-12 col-sm-3 bs-wizard-step active">
-            <div class="text-center bs-wizard-stepnum"><?php _e('Initial Capital', 'xdac_wp_company'); ?></div>
-            <div class="progress"><div class="progress-bar"></div></div>
-            <span class="bs-wizard-dot"></span>
-        </div>
-
-        <div class="col-xs-12 col-sm-3 bs-wizard-step disabled">
-            <div class="text-center bs-wizard-stepnum"><?php _e('Confirmation', 'xdac_wp_company'); ?></div>
-            <div class="progress"><div class="progress-bar"></div></div>
-            <span class="bs-wizard-dot"></span>
-        </div>
-    </div>
-</div>
-
 <div class="wrapper-login-register">
-    <p class="step-title"><?php _e('Company initial capital', 'xdac_wp_company'); ?></p>
+    <p class="step-title"><?php _e('Invest in company', 'xdac_wp_company'); ?></p>
 
     <div class="tabs-login-register">
         <?php if(!empty($errors->errors)):?>
@@ -37,6 +9,7 @@
                 <p class="login-register-description"><?php echo $error[0] ?></p>
             <?php endforeach; ?>
         <?php else:?>
+            <?php global $company; ?>
             <div class="error">
                 <p class="xdac-client-errors hidden"><?php _e('Oops! Something went wrong', 'xdac_wp_company')?></p>
             </div>
@@ -50,7 +23,7 @@
                     <p class="before-pay-btn"><?php _e('Please wait, your transaction will be processed', 'xdac_wp_company'); ?><br /></p>
                 <?php endif;?>
 
-                <p class="before-pay-btn"><?php _e('Send initial capital in XDAC tokens to your company account', 'xdac_wp_company'); ?><br /></p>
+                <p class="before-pay-btn"><?php _e('Send capital in XDAC tokens to your company account', 'xdac_wp_company'); ?><br /></p>
 
                 <div>
                     <input type="hidden" name="wallet" value="<?php echo $company->wallet?>" />
@@ -58,7 +31,6 @@
                 </div>
 
                 <input class="xdac-submit-form" type="submit" value="PAY" id="selectAccount" />
-                <p class="after-pay-btn"><?php _e('Minimum 100 XDAC to register a company', 'xdac_wp_company'); ?><br /></p>
 
                 <button class="register-company-info register-company-info__btn" >?</button>
 
@@ -68,10 +40,11 @@
 
                 <p class="xdac-register-terms xdac-company-register-terms">
                     <a href="javascript:void(0)"><?php _e(' Existing owners: ', 'xdac_wp_company'); ?></a><br /><br />
-                    <?php _e('No owners yet', 'xdac_wp_company'); ?><br />
-                    <?php _e('This company is avaliable to the public', 'xdac_wp_company'); ?><br />
-                    <?php _e('Whoever deposits minimum initial capital first is the owner of this company.', 'xdac_wp_company'); ?>
+                    <?php foreach ($owners as $owner):?>
+                        <?php echo $owner->amount; ?> XDAC (<?php echo round($companyCapital*100/$owner->amount) ?>%): <?php echo $owner->user; ?><br />
+                    <?php endforeach; ?>
                 </p>
+
             </div>
         <?php endif;?>
     </div>
@@ -122,8 +95,8 @@
 <script>
     var mainAccount = '<?php echo XDAC_COMPANY_MAIN_ACCOUNT ?>';
     var currency = '<?php echo XDAC_COMPANY_CURRENCY ?>';
-    var minTransactionAmount = '<?php echo XDAC_COMPANY_MIN_TRANSACTION_AMOUNT ?>';
+    var minTransactionAmount = '0';
     var chainId = '<?php echo $chainId ?>';
-    var partner = false;
+    var partner = 'partner';
 </script>
 <?php include_once( XDAC_COMPANY_ABSPATH.'/templates/footer.php' ); ?>

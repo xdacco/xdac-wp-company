@@ -56,9 +56,9 @@
 
                 <p class="xdac-register-terms xdac-company-register-terms">
                     <a href="javascript:void(0)"><?php _e(' Existing owners: ', 'xdac_wp_company'); ?></a><br /><br />
-                    <?php var_dump($owners); die; ?>
-                    300 XDAC (75%): sd7fysdfyshd897fys9d87fyhsdf9sdf9s<br />
-                    100 XDAC (25%): sd7fysdfyshd897fys9d87fy45g45gdf9s<br />
+                    <?php foreach ($owners as $owner):?>
+                        <?php echo $owner->amount; ?> XDAC (<?php echo round($companyCapital*100/$owner->amount) ?>%): <?php echo $owner->user; ?><br />
+                    <?php endforeach; ?>
                 </p>
             <?php endif;?>
         </div>

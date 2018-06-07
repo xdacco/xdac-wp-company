@@ -14,50 +14,21 @@
         };
 
         async function selectAccount(amount) {
-
             amount = amount.toString() + ' ' + currency;
-
-            this.disabled=true;
-
             $('.xdac-client-errors').addClass('hidden');
-
-            var memo = JSON.stringify({
-                'action': $('[name=action]').val(),
-                'wallet': $('[name=wallet]').val(),
-            });
-
             const eos = window.scatter.eos( network, Eos.Localnet, {chainId: chainId} );
             await scatter.suggestNetwork(network);
             const identity = await scatter.getIdentity(requiredFields);
             const eosAccount = identity.accounts.find(account => account.blockchain === 'eos');
             eos.contract('eosio.token', {requiredFields}).then(contract => {
-                contract.transfer(eosAccount.name, mainAccount, amount, memo).then(function (data) {
-
-                    const formData = new FormData();
-                    formData.append("xdac_company_form", 'send-xdac-company');
-                    formData.append("response", JSON.stringify(data));
-
-                    $.ajax({
-                        url: window.location.href,
-                        type: "POST",
-                        data: {
-                            "xdac_company_form": "send-xdac-company",
-                            "amount": amount,
-                            "response": JSON.stringify(data)
-                        },
-                        dataType: 'json',
-                        success: function (response) {
-                            if(response.status == 'successful') {
-                                window.location.href = response.link;
-                            }
-                        },
-                        error: function(jqXHR) {
-                            var response = $.parseJSON(jqXHR.responseText);
-                        }
-                    });
-
+                contract.transfer(eosAccount.name, mainAccount, amount, $('[name=wallet]').val()).then(function (data) {
+                    let url = new URL(window.location.href);
+                    url.searchParams.set('trx_id', data.transaction_id);
+                    if(partner){
+                        url.searchParams.set('partner', partner);
+                    }
+                    window.location.href = url.href;
                 }).catch(error => {
-                    this.disabled=false;
                     $('.xdac-client-errors').removeClass('hidden');
                 });
             });
@@ -90,5 +61,6 @@
                 right: value
             });
         });
+
     });
 })(jQuery);

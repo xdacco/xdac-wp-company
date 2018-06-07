@@ -48,7 +48,7 @@
 
                 <div class="site-group <?php if( !empty($errors->errors['company_link']) ) echo 'error'; ?>" >
                     <?php if ( !empty($errors->errors['company_link']) )  echo '<p class="xdac-client-errors">' . $errors->errors['company_link'][0] . '</p>'; ?>
-                    <span class="base-url">https://xdac.co/</span>
+                    <span class="base-url">https://xdac.co/company/</span>
                     <input type="text" name="company_link" value="<?php echo !empty($_POST['company_link']) ? $_POST['company_link'] : ''; ?>" placeholder="Company Link *" required maxlength="255"/>
                 </div>
 
