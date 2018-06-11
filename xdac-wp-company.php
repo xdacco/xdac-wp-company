@@ -65,6 +65,23 @@ function create_xdac_company_tables() {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
     }
 
+
+    $query = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( "eos_main_token_transfers" ) );
+    /**
+     * If this table doesn't exist, then it should be created
+     */
+    if ( $wpdb->get_var( $query ) != "eos_main_token_transfers" ) {
+        $wpdb->query("CREATE TABLE IF NOT EXISTS `eos_main_token_transfers` (
+                `account_action_seq` INT(11) NOT NULL,
+                `trx_id` VARCHAR(67) NOT NULL,
+                `act_from` VARCHAR(32) NOT NULL,
+                `quantity` VARCHAR(67) NOT NULL,
+                `memo` text NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+
+        $wpdb->query("ALTER TABLE `eos_main_token_transfers`
+            ADD UNIQUE KEY `seq` (`account_action_seq`)");
+    }
 }
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -322,7 +339,7 @@ if( !class_exists('XdacCompany') ):
 															style="text-align: left;">Your company name:&nbsp;'.$companyName.'</p>
 														 <p
 															style="text-align: left;">To activate your company and verify your email address, please click the following link <a
-															href="https://www.xdac.co/login/">'.home_url(self::PAGE_VERITY_EMAIL_COMPANY).'?token='.$token.'&link='.$companyLink.'</a></p>
+															href="'.home_url(self::PAGE_VERITY_EMAIL_COMPANY).'?token='.$token.'&link='.$companyLink.'">'.home_url(self::PAGE_VERITY_EMAIL_COMPANY).'?token='.$token.'&link='.$companyLink.'</a></p>
 														 <p
 															style="text-align: left;">&nbsp;</p>
 														 <p
