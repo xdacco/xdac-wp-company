@@ -82,6 +82,39 @@ function create_xdac_company_tables() {
         $wpdb->query("ALTER TABLE `eos_main_token_transfers`
             ADD UNIQUE KEY `seq` (`account_action_seq`)");
     }
+
+    $query = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( "xdac_companies" ) );
+
+    /**
+     * If this table doesn't exist, then it should be created
+     */
+    if ( $wpdb->get_var( $query ) != "xdac_company_info" ) {
+        $wpdb->query("CREATE TABLE IF NOT EXISTS `xdac_company_info` (
+                `company` VARCHAR(20) NOT NULL,
+                `about` text NOT NULL,
+                PRIMARY KEY  (id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+
+        $wpdb->query("ALTER TABLE `xdac_company_info`
+            ADD UNIQUE KEY `company` (`company`)");
+    }
+
+    $query = $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->esc_like( "eos_main_actions" ) );
+    /**
+     * If this table doesn't exist, then it should be created
+     */
+    if ( $wpdb->get_var( $query ) != "eos_main_actions" ) {
+        $wpdb->query("CREATE TABLE IF NOT EXISTS `eos_main_actions` (
+                `account_action_seq` INT(11) NOT NULL,
+                `trx_id` VARCHAR(67) NOT NULL,
+                `user` VARCHAR(32) NOT NULL,
+                `action` VARCHAR(67) NOT NULL,
+                `ipfsid` VARCHAR(100) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+
+        $wpdb->query("ALTER TABLE `eos_main_actions`
+            ADD UNIQUE KEY `seq` (`account_action_seq`)");
+    }
 }
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -99,6 +132,7 @@ if( !class_exists('XdacCompany') ):
         const PAGE_VERITY_EMAIL_COMPANY = 'verify-email-company';
         const PAGE_SEND_XDAC_COMPANY = 'send-xdac-company';
         const PAGE_CONFIRMATION_COMPANY = 'confirmation-company';
+        const PAGE_EDIT_COMPANY = 'edit-company';
 
         /**
          * Complete data transfer version.
@@ -453,7 +487,6 @@ if( !class_exists('XdacCompany') ):
 
         public function xdac_page_template( $page_template )
         {
-
             if ( is_page( self::PAGE_REGISTER_COMPANY ) ) {
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/register.php';
             } elseif ( is_page( self::PAGE_LOGIN_COMPANY ) ) {
@@ -564,6 +597,26 @@ if( !class_exists('XdacCompany') ):
                 }
 
                 $page_template = XDAC_COMPANY_ABSPATH.'/templates/confirmation-company.php';
+
+            } elseif( is_page( self::PAGE_EDIT_COMPANY ) ) {
+
+                global $wpdb;
+                global $wp_query;
+
+                $link = $_GET['link'];
+
+                if(!empty($link)){
+                    global $company;
+                    $company = $wpdb->get_row( $wpdb->prepare("SELECT * FROM `xdac_companies` LEFT JOIN `xdac_company_info` ON `xdac_companies`.`wallet` = `xdac_company_info`.`company` WHERE `link`='{$link}'") );
+                    if(!empty($company)){
+                        $page_template = XDAC_COMPANY_ABSPATH . '/templates/company/edit.php';
+                    } else {
+                        $wp_query->set_404();
+                    }
+                } else {
+                    $wp_query->set_404();
+                }
+
             }
             return $page_template;
         }
@@ -597,6 +650,7 @@ if( !class_exists('XdacCompany') ):
             $this->define( 'XDAC_COMPANY_URL_VERITY_EMAIL', self::PAGE_VERITY_EMAIL_COMPANY );
             $this->define( 'XDAC_COMPANY_URL_SEND_XDAC', self::PAGE_SEND_XDAC_COMPANY );
             $this->define( 'XDAC_COMPANY_URL_CONFIRMATION', self::PAGE_CONFIRMATION_COMPANY );
+            $this->define( 'XDAC_COMPANY_URL_EDIT', self::PAGE_EDIT_COMPANY );
         }
 
         /**
